@@ -1,6 +1,6 @@
 
 
-env_name: CartPole-v1
+env_name: CartPole-LongPole-v1
 
 # Model config
 vf_share_layers: true
@@ -26,8 +26,8 @@ grad_clip: 0.5
 seed: 0
 
 # Evaluation config
-evaluation_interval: 100
-evaluation_duration: 10
+evaluation_interval: 1000
+evaluation_duration: 50
 evaluation_duration_unit: "episodes"
 
-max_timesteps: 30000
+max_timesteps: 100000

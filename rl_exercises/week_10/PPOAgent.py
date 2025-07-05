@@ -8,10 +8,17 @@ The generation of this code is supported by the following resources:
 """
 
 import hydra
+from gymnasium.envs.classic_control.cartpole import CartPoleEnv
 from omegaconf import DictConfig
-from ray import tune
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.core.rl_module.default_model_config import DefaultModelConfig
+
+
+class CustomCartPoleEnv(CartPoleEnv):
+    def __init__(self, pole_length=0.5, gravity=9.8, **kwargs):
+        super().__init__(**kwargs)
+        self.pole_length = pole_length
+        self.gravity = gravity
 
 
 @hydra.main(config_path="../configs/agent/", config_name="ppo_HPO", version_base="1.1")
@@ -23,7 +30,6 @@ def evaluate(cfg: DictConfig) -> None:
         cfg (DictConfig): Configuration for the PPO agent.
     """
     # Create a PPO configuration
-
     """
     Docs:
     https://docs.ray.io/en/latest/rllib/package_ref/doc/ray.rllib.algorithms.algorithm_config.AlgorithmConfig.html
@@ -33,7 +39,7 @@ def evaluate(cfg: DictConfig) -> None:
     """
     config = (
         PPOConfig()
-        .environment(env=cfg.env_name)
+        .environment(CustomCartPoleEnv, env_config={"pole_length": 1.0, "gravity": 9.8})
         .framework("torch")
         .rl_module(
             model_config=DefaultModelConfig(
@@ -69,20 +75,29 @@ def evaluate(cfg: DictConfig) -> None:
     config["seed"] = cfg.seed
     config["num_env_runners"] = 1
 
-    tuner = tune.Tuner(
-        "PPO",
-        param_space=config,
-        run_config=tune.RunConfig(
-            stop={"num_env_steps_sampled_lifetime": cfg.max_timesteps},
-        ),
-    )
+    # tuner = tune.Tuner(
+    #     "PPO",
+    #     param_space=config,
+    #     run_config=tune.RunConfig(
+    #         stop={"num_env_steps_sampled_lifetime": cfg.max_timesteps},
+    #     ),
+    # )
 
-    results = tuner.fit()
+    # results = tuner.fit()
 
-    print(
-        "Best result:",
-        results.get_best_result(metric="episode_reward_mean", mode="max"),
-    )
+    # Build the PPO agent
+    agent = config.build()
+
+    timesteps = 0
+    while timesteps < cfg.max_timesteps:
+        # Perform training
+        result = agent.train()
+        timesteps = result["num_env_steps_sampled_lifetime"]
+
+    evaluation_results = agent.evaluate()
+    final_reward = evaluation_results["env_runners"]["episode_return_mean"]
+
+    print(f"Final evaluation reward: {final_reward}")
 
 
 if __name__ == "__main__":
