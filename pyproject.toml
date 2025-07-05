@@ -14,7 +14,7 @@ keywords = [
 ]
 
 dependencies = [
-        "numpy",
+        "numpy<2.0.0",
         "gymnasium[box2d]",
         "torch",
         "tqdm",
@@ -33,7 +33,7 @@ dependencies = [
         "moviepy",
         "rliable",
         "HyperSweeper",
-        "ray[rllib]",
+        "ray[rllib, tune]",
 ]
 
 [project.optional-dependencies]
