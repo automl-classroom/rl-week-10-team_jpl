@@ -1,0 +1,10 @@
+# config/config.yaml
+defaults:
+    - config
+
+ppo:
+    learning_rate: ???
+    gamma: ???
+    gae_lambda: ???
+    clip_range: ???
+    training_gravity: ???

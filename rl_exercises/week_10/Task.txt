@@ -1,0 +1,23 @@
+# Generalizing Across Gravity in Lunar Lander
+
+- Generalization across environments (different gravity constants)
+
+- Gravity Constant can be in between 0 and -12
+
+-> Extrapolation in one dimension
+    -> Training Set has values between 0 and -8
+    -> Validation set has values between -8 and -12
+
+
+- Also set the training gravity as hyperparemeter
+
+-> Learning Rate and Gravity are the most important hyper parameters using fanova
+-> The environment is not solved after around 40 trials in the evaluation across the different gravities (best incumbant was around 70)
+-> I used 5 Evaluations across 4 different gravity constants, could also be to noisy in order to be a good evaluation metric, meaning the 70 was by chance only
+-> The environment also was not really solved in the training data, therefore one should maybe increase training time a bit, or introduce some early stopping of new increase is visible anymore
+
+-> Should rerun the experiment with more computational ressources using different seeds for each step, more evaluation trajectories and maybe a few more hyperparameters (including network size, etc.)
+
+
+
+
